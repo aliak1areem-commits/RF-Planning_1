@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RF Planning Platform</title>
+<meta name="theme-color" content="#0B1730">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23124191'/%3E%3Cpath d='M9 22V10h7a4 4 0 010 8h-7m7 0l5 4' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<!-- ═══ Demo Guard (يجب أن يكون أول شي) ═══ -->
+<script src="./js/core/demo-guard.js"></script>
+
+<!-- ═══ External Libraries ═══ -->
+<script src="https://unpkg.com/lucide@0.400.0/dist/umd/lucide.min.js"></script>
+<script>
+  if (!window.lucide) {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/lucide@0.400.0/dist/umd/lucide.min.js"><\/script>');
+  }
+</script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- ═══ CSS Modules ═══ -->
+<link rel="stylesheet" href="./css/main.css">
+<link rel="stylesheet" href="./css/layout.css">
+<link rel="stylesheet" href="./css/components.css">
+<link rel="stylesheet" href="./css/map.css">
+<link rel="stylesheet" href="./css/tools.css">
+<link rel="stylesheet" href="./css/dashboard.css">
+<link rel="stylesheet" href="./css/modals.css">
+<link rel="stylesheet" href="./css/theme.css">
+</head>
+
+<body>
+<!-- ═══════════════════════════════════════════
+     MAIN APP
+     ═══════════════════════════════════════════ -->
+<div class="app">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo"><i data-lucide="radio-tower"></i></div>
+      <div class="sb-brand-text"><b>RF Planning</b><span>Network optimization</span></div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-section">Workspace</div>
+      <button class="nav-item active" data-page="map"><i data-lucide="map"></i><span>Map</span></button>
+      <button class="nav-item" data-page="dashboard"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></button>
+      <button class="nav-item" data-page="cells"><i data-lucide="table-2"></i><span>Cells</span><span class="badge" id="navCellsCount">0</span></button>
+
+      <div class="sb-section">Data</div>
+      <button class="nav-item" data-page="projects"><i data-lucide="folder"></i><span>Projects</span></button>
+      <button class="nav-item" data-page="import"><i data-lucide="upload"></i><span>Import</span></button>
+
+      <div class="sb-section">Optimization</div>
+      <button class="nav-item" data-page="tools"><i data-lucide="wrench"></i><span>Tools</span></button>
+    </nav>
+
+    <div class="sb-footer">
+      <span class="sb-ver">v3.0</span>
+      <button onclick="toggleNav()" title="Collapse menu"><i data-lucide="chevrons-left"></i></button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="main">
+
+    <!-- ═══ TOPBAR ═══ -->
+    <div class="topbar">
+      <div class="topbar-title">
+        <span id="pageIcon"></span>
+        <span id="pageTitle">Cell Map</span>
+        <span class="subtitle" id="pageSubtitle">Visualize cells on the map</span>
+      </div>
+
+      <div class="topbar-actions">
+        <button class="icon-btn" onclick="loadCells(false)" title="Refresh data"><i data-lucide="refresh-cw"></i></button>
+        <button class="icon-btn" id="toggleSidebarBtn" onclick="toggleMapSidebar()" title="Toggle filters panel"><i data-lucide="panel-left"></i></button>
+
+        <div class="user-menu">
+          <button class="user-chip" onclick="toggleUserMenu(event)">
+            <span class="avatar" id="userAvatar">?</span>
+            <span id="userBadge"></span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="menu" id="userMenu" onclick="event.stopPropagation()">
+            <button id="darkModeBtn" onclick="toggleDarkMode()"><i data-lucide="moon"></i><span>Dark mode</span></button>
+            <hr>
+            <button class="danger-item" onclick="doLogout()"><i data-lucide="log-out"></i><span>Sign out</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PAGES — سنبنيها تدريجياً ═══ -->
+    <div id="page-mount"></div>
+
+  </main>
+</div>
+
+<!-- ═══ Login Screen ═══ -->
+<div id="loginScreen" class="login">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="sb-logo"><i data-lucide="radio-tower"></i></div>
+      <div><h1>RF Planning Platform</h1><p>Sign in to continue</p></div>
+    </div>
+    <form id="loginForm">
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" placeholder="your.username" autocomplete="username">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      <div id="loginError" class="login-error" style="display:none"></div>
+      <button type="submit" id="loginBtn" class="btn btn-primary">Sign in</button>
+    </form>
+    <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);text-align:center;">
+      <button type="button" id="tryDemoBtn" onclick="startDemoMode()" class="btn-demo">
+        <span>👤</span>
+        <span>Try Demo — No Login Required</span>
+      </button>
+      <div style="font-size:11px;color:#94A3B8;margin-top:8px;">
+        Riyadh sample network · Read-only
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Global Containers ═══ -->
+<div class="toast" id="toast"></div>
+<div id="modalMount"></div>
+<div id="pageMount"></div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT MODULES
+     ═══════════════════════════════════════════ -->
+
+<!-- ═══ Core ═══ -->
+<script src="./js/core/config.js"></script>
+<script src="./js/core/utils.js"></script>
+<script src="./js/core/cache.js"></script>
+<script src="./js/core/router.js"></script>
+
+<!-- ═══ UI ═══ -->
+<script src="./js/ui/legend.js"></script>
+<script src="./js/ui/sidebar-accordion.js"></script>
+<script src="./js/ui/tools-hub.js"></script>
+<script src="./js/ui/split-view.js"></script>
+<script src="./js/ui/user-menu.js"></script>
+<script src="./js/ui/emoji-stripper.js"></script>
+
+<!-- ═══ i18n ═══ -->
+<script src="./js/i18n/translations.js"></script>
+<script src="./js/i18n/language.js"></script>
+
+<!-- ═══ Auth ═══ -->
+<script src="./js/auth/permissions.js"></script>
+<script src="./js/auth/login.js"></script>
+<script src="./js/auth/users-manager.js"></script>
+<script src="./js/auth/demo-mode.js"></script>
+
+<!-- ═══ Data ═══ -->
+<script src="./js/data/cells-loader.js"></script>
+<script src="./js/data/projects.js"></script>
+<script src="./js/data/import.js"></script>
+<script src="./js/data/cells-page.js"></script>
+<script src="./js/data/dashboard.js"></script>
+
+<!-- ═══ Map ═══ -->
+<script src="./js/map/map-init.js"></script>
+<script src="./js/map/map-render.js"></script>
+<script src="./js/map/map-filters.js"></script>
+<script src="./js/map/map-controls.js"></script>
+<script src="./js/map/map-search.js"></script>
+<script src="./js/map/map-bookmarks.js"></script>
+<script src="./js/map/map-context.js"></script>
+<script src="./js/map/map-comments.js"></script>
+<script src="./js/map/map-neighbor-lines.js"></script>
+
+<!-- ═══ Tools ═══ -->
+<script src="./js/tools/pci-checker.js"></script>
+<script src="./js/tools/gsm-planner.js"></script>
+<script src="./js/tools/psc-checker.js"></script>
+<script src="./js/tools/bsic-analyzer.js"></script>
+<script src="./js/tools/hsn-checker.js"></script>
+<script src="./js/tools/neighbor-analysis.js"></script>
+<script src="./js/tools/neighbor-symmetry.js"></script>
+<script src="./js/tools/three-g-analyzer.js"></script>
+<script src="./js/tools/azimuth-opt.js"></script>
+<script src="./js/tools/new-site.js"></script>
+<script src="./js/tools/distance-bearing.js"></script>
+<script src="./js/tools/azimuth-tilt.js"></script>
+<script src="./js/tools/unit-converter.js"></script>
+<script src="./js/tools/kml-export.js"></script>
+
+<!-- ═══ Main Entry ═══ -->
+<script src="./js/app.js"></script>
+
+<!-- ═══ Service Worker ═══ -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    console.log('✅ SW registered');
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          newWorker.postMessage('SKIP_WAITING');
+          setTimeout(() => window.location.reload(), 500);
+        }
+      });
+    });
+  }).catch(err => console.log('❌ SW failed:', err));
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
+}
+</script>
+
+</body>
+</html>
