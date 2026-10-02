@@ -1,0 +1,63 @@
+/* ═══════════════════════════════════════════════════════
+   THEME — Dark Mode Overrides
+   ═══════════════════════════════════════════════════════ */
+
+body.dark {
+  --bg: #0B1220;
+  --surface: #111A2E;
+  --surface-2: #16223A;
+  --surface-3: #1D2B48;
+  --border: #22314F;
+  --border-strong: #2F4268;
+
+  --text: #E6EBF5;
+  --text-2: #AAB6CC;
+  --text-3: #8492AE;
+
+  --primary: #5B8DEF;
+  --primary-hover: #7AA3F5;
+  --primary-soft: #172A52;
+  --primary-ring: rgba(91, 141, 239, .3);
+
+  --success: #4ADE80;
+  --success-soft: #12301F;
+  --warning: #FBBF24;
+  --warning-soft: #33280E;
+  --danger: #F87171;
+  --danger-soft: #3A1717;
+
+  --sb-bg: #070D1A;
+}
+
+/* Dark Mode bridge for inline styles */
+body.dark [style*="background:#fff"] { background: var(--surface) !important; }
+body.dark [style*="background:#F9FBFE"],
+body.dark [style*="background:#FBFCFE"],
+body.dark [style*="background:#F4F7FB"] { background: var(--surface-2) !important; }
+
+body.dark [style*="background:#EAF2FB"] { background: var(--primary-soft) !important; }
+body.dark [style*="color:#0C1B3D"] { color: var(--text) !important; }
+body.dark [style*="color:#5A6B87"] { color: var(--text-2) !important; }
+
+body.dark [style*="solid #E9EEF6"],
+body.dark [style*="solid #D7DEEA"] { border-color: var(--border) !important; }
+
+/* Dark mode Tool Legend */
+body.dark .tool-legend {
+  background: rgba(15, 32, 56, .98);
+  border-color: #1E3A6D;
+}
+
+body.dark .tool-legend-head { color: #fff; border-color: #1E3A6D; }
+body.dark .tool-legend-label { color: #E2E8F0; }
+body.dark .tool-legend-count { background: #142A5C; color: #AEB9D4; }
+body.dark .tool-legend-item:hover { background: #142A5C; }
+body.dark .tool-legend-actions { border-color: #1E3A6D; }
+body.dark .tool-legend-actions button {
+  background: #142A5C;
+  color: #AEB9D4;
+  border-color: #1E3A6D;
+}
+
+/* Dark mode Tables */
+body.dark .data-table tbody tr[style] td { color: #1B1F2A; }
