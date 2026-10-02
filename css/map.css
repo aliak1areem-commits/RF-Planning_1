@@ -1,0 +1,439 @@
+/* ═══════════════════════════════════════════════════════
+   MAP — Container, Sidebar, Legend, Controls
+   ═══════════════════════════════════════════════════════ */
+
+.map-container {
+  display: flex;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+#map {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  z-index: 1;
+  background: #0A1628;
+}
+
+/* ═══ Map Sidebar (Filters Panel) ═══ */
+.map-sidebar {
+  width: 300px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  transition: width .25s, padding .25s;
+}
+
+.map-sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  border-right: none;
+  overflow: hidden;
+}
+
+.map-sidebar details {
+  border-bottom: 1px solid var(--border);
+  padding: 2px 0;
+}
+
+.map-sidebar summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.map-sidebar summary::-webkit-details-marker { display: none; }
+
+.map-sidebar summary::after {
+  content: "+";
+  color: var(--text-3);
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.map-sidebar details[open] summary::after { content: "–"; }
+
+.map-sidebar .filter-group { margin-bottom: 12px; }
+
+/* ═══ Map Toolbar (Search + Chips) ═══ */
+.map-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: min(560px, calc(100% - 160px));
+  pointer-events: none;
+}
+
+.map-toolbar > * { pointer-events: auto; }
+
+.map-search-box {
+  position: static;
+  transform: none;
+  width: 100%;
+  max-width: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 4px 4px 14px;
+  box-shadow: var(--shadow-md);
+}
+
+.map-search-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.map-search-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  color: var(--text);
+  padding: 8px 4px;
+}
+
+.map-search-box button {
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ═══ Quick Filter Chips ═══ */
+.quick-chips {
+  position: static;
+  transform: none;
+  max-width: none;
+  justify-content: center;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 4px 11px;
+  background: var(--surface);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+  box-shadow: var(--shadow-sm);
+}
+
+.chip:hover { color: var(--primary); }
+.chip.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* ═══ Map Controls (Right Side) ═══ */
+.map-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.basemap-switcher {
+  position: static;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  gap: 2px;
+}
+
+.basemap-btn {
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.basemap-btn:hover { background: var(--surface-2); color: var(--primary); }
+.basemap-btn.active { background: var(--primary); color: #fff; }
+
+.ctl-group {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.ctl {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.ctl + .ctl { border-top: 1px solid var(--border); }
+.ctl:hover { background: var(--surface-2); color: var(--primary); }
+
+/* ═══ Legend Box ═══ */
+.legend {
+  position: absolute;
+  bottom: 20px;
+  left: 340px;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  z-index: 500;
+  font-size: 11.5px;
+  max-width: 220px;
+  transition: left .25s;
+}
+
+.legend-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, .15);
+}
+
+/* ═══ Site Info Card ═══ */
+.site-info-card {
+  position: absolute;
+  top: 212px;
+  right: 12px;
+  width: 320px;
+  max-height: calc(100% - 232px);
+  background: var(--surface);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  z-index: 550;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.site-info-card.show { display: flex; }
+
+.site-info-head {
+  padding: 14px 18px;
+  background: var(--sb-bg);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.site-info-title {
+  font-size: 14px;
+  font-weight: 700;
+  flex: 1;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.site-info-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .15);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-info-close:hover { background: rgba(255, 255, 255, .2); }
+
+.site-info-body { padding: 18px; overflow-y: auto; flex: 1; }
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+
+.info-row:last-child { border-bottom: none; }
+.info-row .k { color: var(--text-2); font-weight: 500; }
+.info-row .v {
+  color: var(--text);
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: right;
+  word-break: break-word;
+  max-width: 60%;
+}
+
+.info-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin: 16px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ═══ Neighbor Labels on Map ═══ */
+.nb-label {
+  background: var(--surface) !important;
+  border: 1.5px solid var(--primary) !important;
+  border-radius: 6px !important;
+  padding: 2px 6px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: var(--text) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .15) !important;
+}
+
+.nb-label-source {
+  background: #DC2626 !important;
+  border: 2px solid #fff !important;
+  border-radius: 8px !important;
+  padding: 3px 8px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: #fff !important;
+  box-shadow: 0 3px 8px rgba(220, 38, 38, .4) !important;
+}
+
+/* ═══ Split View ═══ */
+.main.split {
+  display: grid;
+  grid-template-columns: minmax(420px, 44%) 1fr;
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+
+.main.split > .topbar,
+.main.split > .stats-bar { grid-column: 1 / -1; }
+
+.main.split > .page { display: none; }
+
+.main.split > .page.split-tool {
+  display: flex;
+  grid-column: 1;
+  grid-row: 3;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.main.split > #page-map.active {
+  display: flex;
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.main.split .tool-page { max-width: none; padding: 16px; }
+.main.split .map-sidebar,
+.main.split .map-toolbar { display: none; }
+.main.split .legend,
+.main.split .map-mini-stats { left: 12px !important; }
+
+.split-close {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 600;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font: 600 12.5px 'Inter', sans-serif;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+}
+
+.main.split .split-close { display: flex; }
+
+/* ═══ Basemap Leaflet overrides ═══ */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 10px;
+}
