@@ -136,3 +136,60 @@
 
   console.log('✅ Utils loaded');
 })();
+// ═══════════════════════════════════════════════════════════
+// 🔥 PERMANENT FIX — يُشغّل تلقائياً
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    // نفس الكود اللي شغّلته بس يشتغل تلقائياً
+    const css = document.createElement('style');
+    css.id = '__permanentFix';
+    css.textContent = `
+      .map-mini-stats {
+        position: absolute !important;
+        bottom: 20px !important;
+        left: 320px !important;
+        top: auto !important;
+        right: auto !important;
+        width: auto !important;
+        display: flex !important;
+        z-index: 500 !important;
+        flex: 0 0 auto !important;
+      }
+      .legend {
+        position: absolute !important;
+        bottom: 20px !important;
+        left: 340px !important;
+        width: auto !important;
+        display: block !important;
+        z-index: 500 !important;
+      }
+      .map-toolbar {
+        position: absolute !important;
+        top: 12px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: min(560px, calc(100% - 400px)) !important;
+      }
+      .map-controls {
+        position: absolute !important;
+        top: 12px !important;
+        right: 12px !important;
+        width: auto !important;
+        display: flex !important;
+      }
+      .goto-panel,
+      .bookmarks-panel {
+        display: none !important;
+      }
+      .goto-panel.show {
+        display: flex !important;
+      }
+      .bookmarks-panel.show {
+        display: block !important;
+      }
+    `;
+    document.head.appendChild(css);
+    console.log('✅ Permanent fix applied');
+  }, 1000);
+});
