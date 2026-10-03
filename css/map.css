@@ -917,3 +917,83 @@ html, body {
   .map-sidebar.open { transform: translateX(0); }
   .legend { left: 16px; }
 }
+
+/* ═══════════════════════════════════════════════════════
+   PANELS — Force hide by default (added by fix)
+   ═══════════════════════════════════════════════════════ */
+
+/* Goto Panel */
+.goto-panel {
+  display: none !important;
+  position: absolute !important;
+  top: 46px !important;
+  right: 0 !important;
+  left: auto !important;
+  width: 220px !important;
+  background: #fff !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, .16) !important;
+  padding: 12px !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  z-index: 2000 !important;
+  box-sizing: border-box !important;
+}
+
+.goto-panel.show {
+  display: flex !important;
+}
+
+.goto-panel input {
+  width: 100% !important;
+  padding: 8px 10px !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  color: #0F172A !important;
+}
+
+.goto-panel input:focus {
+  border-color: #124191 !important;
+  box-shadow: 0 0 0 3px rgba(18, 65, 145, .18) !important;
+}
+
+.goto-panel button {
+  padding: 8px !important;
+  background: #124191 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  font-family: inherit !important;
+}
+
+/* Bookmarks Panel */
+.bookmarks-panel {
+  display: none !important;
+  position: absolute !important;
+  top: 46px !important;
+  right: 0 !important;
+  left: auto !important;
+  width: 260px !important;
+  background: #fff !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, .16) !important;
+  padding: 12px !important;
+  max-height: 400px !important;
+  overflow-y: auto !important;
+  z-index: 2000 !important;
+  box-sizing: border-box !important;
+}
+
+.bookmarks-panel.show {
+  display: block !important;
+}
