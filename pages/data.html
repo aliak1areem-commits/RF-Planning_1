@@ -1,0 +1,268 @@
+<!-- ═══════════════════════════════════════════════════════
+     PAGE: PROJECTS
+     ═══════════════════════════════════════════════════════ -->
+<section class="page" id="page-projects">
+  <div style="padding:24px;overflow-y:auto;flex:1;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h3 style="font-size:18px;color:#0C1B3D;margin:0 0 4px;">Projects</h3>
+        <p style="color:#5A6B87;font-size:13px;margin:0;">Manage your RF projects</p>
+      </div>
+      <button class="btn btn-primary" onclick="openCreateProjectModal()">+ New Project</button>
+    </div>
+    <div id="projectsList" 
+         style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+      <div style="text-align:center;padding:40px;color:#5A6B87;grid-column:1/-1;">Loading projects...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE: IMPORT
+     ═══════════════════════════════════════════════════════ -->
+<section class="page" id="page-import">
+  <div style="padding:24px;overflow-y:auto;flex:1;max-width:900px;margin:0 auto;width:100%;">
+    
+    <div style="margin-bottom:20px;">
+      <h3 style="font-size:18px;color:#0C1B3D;margin:0 0 4px;">Import Cells</h3>
+      <p style="color:#5A6B87;font-size:13px;margin:0;">Upload Excel or CSV to add cells</p>
+    </div>
+
+    <!-- Step 1: Project -->
+    <div class="tool-section">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#124191;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">
+          1
+        </div>
+        <h4 style="margin:0;font-size:14px;color:#0C1B3D;">Select Project</h4>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <select id="importProjectSelect" class="filter-search" style="flex:1;min-width:220px;">
+          <option value="">Choose Project</option>
+        </select>
+        <button class="btn btn-ghost" onclick="openCreateProjectModal()">+ New Project</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div class="tool-section">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#124191;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">
+          2
+        </div>
+        <h4 style="margin:0;font-size:14px;color:#0C1B3D;">Upload Excel / CSV</h4>
+      </div>
+      <div id="importDropZone" 
+           style="border:2px dashed #C9D4E4;border-radius:12px;padding:48px 20px;text-align:center;background:#FBFCFE;cursor:pointer;transition:all .2s;">
+        <div style="font-size:48px;margin-bottom:12px;">📄</div>
+        <div style="font-weight:700;font-size:15px;color:#0C1B3D;margin-bottom:6px;">
+          Drag file here or click
+        </div>
+        <div style="font-size:12.5px;color:#5A6B87;">Supports: .xlsx, .xls, .csv</div>
+      </div>
+      <input type="file" id="importFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="document.getElementById('importFileInput').click()">
+          Choose File
+        </button>
+        <button class="btn btn-ghost" onclick="importPasteFromClipboard()">Paste</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Preview -->
+    <div id="importPreviewCard" style="display:none;background:#fff;border-radius:12px;padding:20px 24px;border:1px solid #E9EEF6;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#124191;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;">
+          3
+        </div>
+        <h4 style="margin:0;font-size:14px;color:#0C1B3D;">Preview & Save</h4>
+      </div>
+      <div id="importPreviewStats" 
+           style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px;">
+      </div>
+      <div id="importPreviewTable" 
+           style="overflow:auto;max-height:300px;border:1px solid #E9EEF6;border-radius:8px;">
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn btn-danger" onclick="importClearPreview()">Cancel</button>
+        <button class="btn btn-gold" id="importSaveBtn" onclick="importSaveToSupabase()">
+          Save to Supabase
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PAGE: CELLS
+     ═══════════════════════════════════════════════════════ -->
+<section class="page" id="page-cells">
+  <div style="padding:24px;overflow-y:auto;flex:1;">
+
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h3 style="font-size:20px;color:#0C1B3D;margin:0 0 4px;">Cells Database</h3>
+        <p style="color:#5A6B87;font-size:13px;margin:0;" id="cellsSubtitle">
+          Browse, filter, and export all cells
+        </p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="cellsToggleColumns()">Columns</button>
+        <button class="btn btn-success" onclick="cellsExportFiltered()">Export</button>
+        <button class="btn btn-ghost" onclick="cellsResetFilters()">Reset</button>
+      </div>
+    </div>
+
+    <!-- Columns Toggler -->
+    <div id="cellsColumnToggler" 
+         style="display:none;background:#fff;border-radius:12px;padding:16px 20px;margin-bottom:16px;border:1px solid #E9EEF6;">
+      <div style="font-size:12px;font-weight:800;color:#0C1B3D;text-transform:uppercase;margin-bottom:10px;">
+        Visible Columns
+      </div>
+      <div id="cellsColumnList" 
+           style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;">
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="cells-toolbar">
+      <div class="cells-toolbar-grid">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            Search
+          </label>
+          <input type="text" id="cellsSearch" class="filter-search" 
+                 placeholder="Cell / Site name..." 
+                 oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            Technology
+          </label>
+          <select id="cellsFilterTech" class="filter-search" onchange="renderCellsPage(1)">
+            <option value="all">All</option>
+            <option value="GSM">GSM (2G)</option>
+            <option value="3G">UMTS (3G)</option>
+            <option value="LTE">LTE (4G)</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            Region
+          </label>
+          <select id="cellsFilterRegion" class="filter-search" onchange="renderCellsPage(1)">
+            <option value="all">All Regions</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            Site
+          </label>
+          <input type="text" id="cellsFilterSite" class="filter-search" 
+                 placeholder="Site prefix..." oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            PCI
+          </label>
+          <input type="number" id="cellsFilterPCI" class="filter-search" 
+                 placeholder="e.g. 123" oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            PSC
+          </label>
+          <input type="number" id="cellsFilterPSC" class="filter-search" 
+                 placeholder="e.g. 100" oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            BCCH
+          </label>
+          <input type="number" id="cellsFilterBCCH" class="filter-search" 
+                 placeholder="e.g. 45" oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            BSIC
+          </label>
+          <input type="text" id="cellsFilterBSIC" class="filter-search" 
+                 placeholder="e.g. 45" oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            HSN
+          </label>
+          <input type="number" id="cellsFilterHSN" class="filter-search" 
+                 placeholder="e.g. 12" oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            LAC
+          </label>
+          <input type="number" id="cellsFilterLAC" class="filter-search" 
+                 placeholder="e.g. 301" oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            RNC
+          </label>
+          <input type="number" id="cellsFilterRNC" class="filter-search" 
+                 placeholder="e.g. 7" oninput="debouncedRenderCells()">
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:5px;">
+            RSI
+          </label>
+          <input type="number" id="cellsFilterRSI" class="filter-search" 
+                 placeholder="e.g. 100" oninput="debouncedRenderCells()">
+        </div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+        <div id="cellsFilterStats" 
+             style="font-size:12.5px;color:#5A6B87;font-family:'JetBrains Mono',monospace;">
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;font-size:12px;color:#5A6B87;">
+          <span id="cellsSelectedInfo" 
+                style="font-family:monospace;font-weight:700;color:#124191;">
+          </span>
+          <select id="cellsPerPage" class="filter-search" 
+                  style="width:100px;padding:5px 10px;" onchange="renderCellsPage(1)">
+            <option value="25">25 / page</option>
+            <option value="50" selected>50 / page</option>
+            <option value="100">100 / page</option>
+            <option value="250">250 / page</option>
+            <option value="500">500 / page</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div id="cellsBulkBar" class="cells-bulk-bar">
+      <b id="cellsBulkCount">0 selected</b>
+      <button class="btn btn-primary" onclick="cellsBulkCopy()">Copy</button>
+      <button class="btn btn-gold" onclick="cellsBulkExport()">Export Selected</button>
+      <button class="btn btn-ghost" onclick="cellsClearSelection()">Clear</button>
+    </div>
+
+    <!-- Table -->
+    <div style="background:#fff;border-radius:12px;border:1px solid #E9EEF6;overflow:hidden;margin-bottom:16px;">
+      <div style="overflow-x:auto;max-height:calc(100vh - 520px);min-height:400px;">
+        <table class="data-table" id="cellsTable" style="width:100%;">
+          <thead style="position:sticky;top:0;z-index:2;">
+            <tr id="cellsTableHead"></tr>
+          </thead>
+          <tbody id="cellsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="cellsPagination" class="cells-pagination"></div>
+
+  </div>
+</section>
