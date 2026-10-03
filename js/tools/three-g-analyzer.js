@@ -83,7 +83,6 @@
         });
 
         threeGImportedData[detectedType] = parsed;
-        const icon = detectedType === 'irat' ? '' : (detectedType === 'intra' ? '' : '');
         if (statusEl) {
           statusEl.textContent = parsed.length + ' relations (' + detectedType + ')';
           statusEl.style.color = '#1F9D55';
@@ -337,28 +336,33 @@
       'Intra: <b>' + intra + '</b> | Inter: <b>' + inter + '</b> | ' +
       'Avg: <b>' + avgDist.toFixed(0) + 'm</b>';
 
-    const tbody = document.querySelector('#3gnb_table tbody');
-    tbody.innerHTML = neighbors.map(nb => {
-      const distStr = nb.distance != null ? nb.distance.toFixed(0) : '-';
-      let bg, sc;
-      if (nb.status === 'Missing') { bg = nb.isFront ? '#FFCDD2' : '#FFEBEE'; sc = '#B91C1C'; }
-      else if (nb.status === 'Added') { bg = '#E8F5E9'; sc = '#1F9D55'; }
-      else { bg = '#FFF3E0'; sc = '#8A5A00'; }
+    // ✅ FIX: استخدم getElementById بدل querySelector
+    const tableEl = document.getElementById('3gnb_table');
+    const tbody = tableEl ? tableEl.querySelector('tbody') : null;
 
-      const tc = nb.type === 'Intra-Freq' ? '#EAF2FB' : '#F3E8FF';
-      const tcol = nb.type === 'Intra-Freq' ? '#124191' : '#7C3AED';
+    if (tbody) {
+      tbody.innerHTML = neighbors.map(nb => {
+        const distStr = nb.distance != null ? nb.distance.toFixed(0) : '-';
+        let bg, sc;
+        if (nb.status === 'Missing') { bg = nb.isFront ? '#FFCDD2' : '#FFEBEE'; sc = '#B91C1C'; }
+        else if (nb.status === 'Added') { bg = '#E8F5E9'; sc = '#1F9D55'; }
+        else { bg = '#FFF3E0'; sc = '#8A5A00'; }
 
-      return '<tr style="background:' + bg + ';">' +
-        '<td>' + escapeHtml(nb.source) + '</td>' +
-        '<td><b>' + escapeHtml(nb.name) + '</b></td>' +
-        '<td>' + distStr + '</td>' +
-        '<td>' + (nb.bearing != null ? nb.bearing.toFixed(0) + '°' : '-') + '</td>' +
-        '<td>' + nb.direction + '</td>' +
-        '<td><span style="padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:700;background:' + tc + ';color:' + tcol + ';">' + nb.type + '</span></td>' +
-        '<td style="color:' + sc + ';font-weight:700;">' + nb.status + '</td>' +
-        '<td>' + (nb.cell && nb.cell.rnc_id ? nb.cell.rnc_id : '-') + '</td>' +
-      '</tr>';
-    }).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;">No neighbors</td></tr>';
+        const tc = nb.type === 'Intra-Freq' ? '#EAF2FB' : '#F3E8FF';
+        const tcol = nb.type === 'Intra-Freq' ? '#124191' : '#7C3AED';
+
+        return '<tr style="background:' + bg + ';">' +
+          '<td>' + escapeHtml(nb.source) + '</td>' +
+          '<td><b>' + escapeHtml(nb.name) + '</b></td>' +
+          '<td>' + distStr + '</td>' +
+          '<td>' + (nb.bearing != null ? nb.bearing.toFixed(0) + '°' : '-') + '</td>' +
+          '<td>' + nb.direction + '</td>' +
+          '<td><span style="padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:700;background:' + tc + ';color:' + tcol + ';">' + nb.type + '</span></td>' +
+          '<td style="color:' + sc + ';font-weight:700;">' + nb.status + '</td>' +
+          '<td>' + (nb.cell && nb.cell.rnc_id ? nb.cell.rnc_id : '-') + '</td>' +
+        '</tr>';
+      }).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;">No neighbors</td></tr>';
+    }
 
     document.getElementById('3gnb_stats').style.display = 'block';
     document.getElementById('3gnb_main').style.display = 'block';
@@ -453,26 +457,31 @@
       '<span style="color:#B91C1C;">Missing: <b>' + missing + '</b></span> | ' +
       '<span style="color:#D97706;">Miss-Front: <b>' + missFront + '</b></span>';
 
-    const tbody = document.querySelector('#irat_table tbody');
-    tbody.innerHTML = neighbors.map(nb => {
-      const distStr = nb.distance != null ? nb.distance.toFixed(0) : '-';
-      let bg, sc;
-      if (nb.status === 'Missing') { bg = nb.isFront ? '#FFCDD2' : '#FFEBEE'; sc = '#B91C1C'; }
-      else if (nb.status === 'Added') { bg = '#E8F5E9'; sc = '#1F9D55'; }
-      else { bg = '#FFF3E0'; sc = '#8A5A00'; }
+    // ✅ FIX: استخدم getElementById
+    const tableEl = document.getElementById('irat_table');
+    const tbody = tableEl ? tableEl.querySelector('tbody') : null;
 
-      return '<tr style="background:' + bg + ';">' +
-        '<td>' + escapeHtml(nb.source) + '</td>' +
-        '<td><b>' + escapeHtml(nb.name) + '</b></td>' +
-        '<td>' + distStr + '</td>' +
-        '<td>' + nb.direction + '</td>' +
-        '<td style="color:' + sc + ';font-weight:700;">' + nb.status + '</td>' +
-        '<td>' + (nb.cell ? escapeHtml(nb.cell.site) : '-') + '</td>' +
-        '<td>' + (nb.cell && nb.cell.bsc ? escapeHtml(nb.cell.bsc) : '-') + '</td>' +
-        '<td>' + (nb.cell && nb.cell.bcch ? nb.cell.bcch : '-') + '</td>' +
-        '<td>' + (nb.cell && nb.cell.bsic ? escapeHtml(String(nb.cell.bsic)) : '-') + '</td>' +
-      '</tr>';
-    }).join('') || '<tr><td colspan="9" style="text-align:center;padding:20px;">No IRAT neighbors</td></tr>';
+    if (tbody) {
+      tbody.innerHTML = neighbors.map(nb => {
+        const distStr = nb.distance != null ? nb.distance.toFixed(0) : '-';
+        let bg, sc;
+        if (nb.status === 'Missing') { bg = nb.isFront ? '#FFCDD2' : '#FFEBEE'; sc = '#B91C1C'; }
+        else if (nb.status === 'Added') { bg = '#E8F5E9'; sc = '#1F9D55'; }
+        else { bg = '#FFF3E0'; sc = '#8A5A00'; }
+
+        return '<tr style="background:' + bg + ';">' +
+          '<td>' + escapeHtml(nb.source) + '</td>' +
+          '<td><b>' + escapeHtml(nb.name) + '</b></td>' +
+          '<td>' + distStr + '</td>' +
+          '<td>' + nb.direction + '</td>' +
+          '<td style="color:' + sc + ';font-weight:700;">' + nb.status + '</td>' +
+          '<td>' + (nb.cell ? escapeHtml(nb.cell.site) : '-') + '</td>' +
+          '<td>' + (nb.cell && nb.cell.bsc ? escapeHtml(nb.cell.bsc) : '-') + '</td>' +
+          '<td>' + (nb.cell && nb.cell.bcch ? nb.cell.bcch : '-') + '</td>' +
+          '<td>' + (nb.cell && nb.cell.bsic ? escapeHtml(String(nb.cell.bsic)) : '-') + '</td>' +
+        '</tr>';
+      }).join('') || '<tr><td colspan="9" style="text-align:center;padding:20px;">No IRAT neighbors</td></tr>';
+    }
 
     document.getElementById('irat_stats').style.display = 'block';
     document.getElementById('irat_main').style.display = 'block';
@@ -487,7 +496,12 @@
     if (!input) { toast('Enter cells', 'error'); return; }
 
     const cells = input.split('\n').map(s => s.trim().toUpperCase()).filter(Boolean);
-    const tbody = document.querySelector('#3gbatch_table tbody');
+
+    // ✅ FIX
+    const tableEl = document.getElementById('3gbatch_table');
+    const tbody = tableEl ? tableEl.querySelector('tbody') : null;
+    if (!tbody) return;
+
     let html = '';
 
     toast('Loading data...', 'info', 1500);
@@ -569,15 +583,21 @@
       });
     });
 
-    document.querySelector('#3gdup_table tbody').innerHTML = dups.length
-      ? dups.map(d => '<tr style="background:#FFF3E0;">' +
-          '<td><b>' + escapeHtml(d.cell) + '</b></td>' +
-          '<td>' + escapeHtml(d.nb) + '</td>' +
-          '<td>' + (d.in_intra ? 'Yes' : '-') + '</td>' +
-          '<td>' + (d.in_inter ? 'Yes' : '-') + '</td>' +
-          '<td>' + (d.in_irat ? 'Yes' : '-') + '</td>' +
-        '</tr>').join('')
-      : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#1F9D55;">No duplicates</td></tr>';
+    // ✅ FIX
+    const tableEl = document.getElementById('3gdup_table');
+    const tbody = tableEl ? tableEl.querySelector('tbody') : null;
+
+    if (tbody) {
+      tbody.innerHTML = dups.length
+        ? dups.map(d => '<tr style="background:#FFF3E0;">' +
+            '<td><b>' + escapeHtml(d.cell) + '</b></td>' +
+            '<td>' + escapeHtml(d.nb) + '</td>' +
+            '<td>' + (d.in_intra ? 'Yes' : '-') + '</td>' +
+            '<td>' + (d.in_inter ? 'Yes' : '-') + '</td>' +
+            '<td>' + (d.in_irat ? 'Yes' : '-') + '</td>' +
+          '</tr>').join('')
+        : '<tr><td colspan="5" style="text-align:center;padding:20px;color:#1F9D55;">No duplicates</td></tr>';
+    }
 
     toast('Found ' + dups.length + ' duplicates', 'success');
   }
@@ -766,7 +786,12 @@
   function clear3GNB() {
     document.getElementById('3gnb_stats').style.display = 'none';
     document.getElementById('3gnb_main').style.display = 'none';
-    document.querySelector('#3gnb_table tbody').innerHTML = '';
+
+    // ✅ FIX
+    const tableEl = document.getElementById('3gnb_table');
+    const tbody = tableEl ? tableEl.querySelector('tbody') : null;
+    if (tbody) tbody.innerHTML = '';
+
     threeGNbCurrent = null;
     toast('Cleared', 'info');
   }
@@ -774,7 +799,12 @@
   function clearIRAT() {
     document.getElementById('irat_stats').style.display = 'none';
     document.getElementById('irat_main').style.display = 'none';
-    document.querySelector('#irat_table tbody').innerHTML = '';
+
+    // ✅ FIX
+    const tableEl = document.getElementById('irat_table');
+    const tbody = tableEl ? tableEl.querySelector('tbody') : null;
+    if (tbody) tbody.innerHTML = '';
+
     threeGNbCurrent = null;
     toast('Cleared', 'info');
   }
