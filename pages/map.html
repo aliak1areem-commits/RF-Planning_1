@@ -1,0 +1,247 @@
+<!-- ═══════════════════════════════════════════════════════
+     PAGE: MAP — الخريطة الرئيسية
+     ═══════════════════════════════════════════════════════ -->
+<section class="page active" id="page-map">
+  <div class="map-container">
+
+    <!-- ═══ Map Sidebar (Filters) ═══ -->
+    <div class="map-sidebar" id="mapSidebar">
+
+      <h3>Search</h3>
+      <div class="filter-group">
+        <input type="text" class="filter-search" id="searchFilter"
+               placeholder="Cell name, site..." 
+               oninput="debouncedApplyFilters()" 
+               style="margin-bottom:8px;">
+        <div style="display:flex;gap:6px;">
+          <select id="findByField" class="filter-search" style="flex:1;padding:8px 10px;font-size:12px;">
+            <option value="">Find by...</option>
+            <optgroup label="GSM (2G)">
+              <option value="bcch">BCCH</option>
+              <option value="tch">TCH</option>
+              <option value="bsic">BSIC</option>
+              <option value="lac">LAC</option>
+              <option value="hsn">HSN</option>
+            </optgroup>
+            <optgroup label="3G (UMTS)">
+              <option value="psc">PSC</option>
+              <option value="uarfcn_dl">DL UARFCN</option>
+              <option value="uarfcn_ul">UL UARFCN</option>
+              <option value="rnc_id">RNC ID</option>
+            </optgroup>
+            <optgroup label="LTE (4G)">
+              <option value="pci">PCI</option>
+              <option value="rsi">RSI</option>
+            </optgroup>
+          </select>
+          <input type="text" id="findByValue" placeholder="Value"
+                 style="width:90px;padding:8px 10px;border:1.5px solid #D7DEEA;border-radius:8px;font-size:12px;font-family:'JetBrains Mono',monospace;outline:none;">
+          <button onclick="findCellByField()"
+                  style="padding:8px 12px;background:#124191;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+            Search
+          </button>
+        </div>
+      </div>
+
+      <h3>Filter by Technology</h3>
+      <div class="filter-group">
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filterGSM" checked onchange="applyFilters()">
+          <span style="color:#D97706;font-weight:700;">GSM (2G)</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filter3G" checked onchange="applyFilters()">
+          <span style="color:#14B8A6;font-weight:700;">3G (UMTS)</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filterLTE" checked onchange="applyFilters()">
+          <span style="color:#124191;font-weight:700;">LTE (4G)</span>
+        </label>
+      </div>
+
+      <h3>Display Options</h3>
+      <div class="filter-group">
+        <label class="filter-checkbox">
+          <input type="checkbox" id="showSectors" checked onchange="toggleLayer('sectors')">
+          <span>Show Sectors</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="showLabels" checked onchange="toggleLayer('labels')">
+          <span>Show Labels</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="showSiteCircle" checked onchange="toggleLayer('siteCircle')">
+          <span>Site Circles (low zoom)</span>
+        </label>
+      </div>
+
+      <h3>Label Mode</h3>
+      <div class="filter-group">
+        <select id="labelMode" class="filter-search" onchange="renderMap()">
+          <option value="name">Cell Name</option>
+          <option value="pci">PCI</option>
+          <option value="both">Both (Name + PCI)</option>
+          <option value="site">Site Name</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+
+      <h3>Neighbor Lines</h3>
+      <div class="filter-group">
+        <label class="filter-checkbox">
+          <input type="checkbox" id="showNeighborLines" onchange="toggleNeighborLines()">
+          <span>Show Neighbor Lines</span>
+        </label>
+        <div style="padding:6px 10px;display:none;" id="nbLineOptions">
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+            <label style="font-size:11px;color:#5A6B87;min-width:60px;">Max:</label>
+            <input type="number" id="nbLineMax" value="10" min="1" max="50"
+                   style="width:60px;padding:4px 8px;border:1.5px solid #D7DEEA;border-radius:6px;font-size:12px;">
+            <span style="font-size:11px;color:#5A6B87;">per cell</span>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <label style="font-size:11px;color:#5A6B87;min-width:60px;">Radius:</label>
+            <input type="number" id="nbLineRadius" value="3000" min="500" max="20000" step="500"
+                   style="width:70px;padding:4px 8px;border:1.5px solid #D7DEEA;border-radius:6px;font-size:12px;">
+            <span style="font-size:11px;color:#5A6B87;">m</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Actions</h3>
+      <div class="filter-group">
+        <button class="btn btn-secondary" style="width:100%;justify-content:center;margin-bottom:8px;" 
+                onclick="fitAllCells()">Fit to View</button>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:8px;" 
+                onclick="clearFilters()">Clear Filters</button>
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:8px;" 
+                onclick="clearCache()">Clear Cache</button>
+        <button class="btn btn-danger" onclick="clearAllCache()" 
+                style="margin-top:8px;width:100%;">Delete Cache</button>
+        <button class="btn btn-ghost" id="multiSelectBtn" 
+                style="width:100%;justify-content:center;" 
+                onclick="toggleMultiSelectMode()">Multi-Select Mode</button>
+        <button class="btn btn-gold" 
+                style="width:100%;justify-content:center;margin-top:8px;" 
+                onclick="copyPolygonCells()">Copy Polygon Cells</button>
+        <button class="btn btn-ghost" 
+                style="width:100%;justify-content:center;margin-top:8px;" 
+                onclick="clearDrawings()">Clear Drawings</button>
+      </div>
+    </div>
+
+    <!-- ═══ Map Container ═══ -->
+    <div id="map"></div>
+
+    <!-- ═══ Multi-Select Info Bar ═══ -->
+    <div class="multi-select-info" id="multiSelectInfo">
+      <span id="multiSelectCount">0 cells selected</span>
+      <button onclick="exportSelectedCells()">Export CSV</button>
+      <button onclick="clearSelection()">Clear</button>
+    </div>
+
+    <!-- ═══ Site Info Card ═══ -->
+    <div class="site-info-card" id="siteInfoCard">
+      <div class="site-info-head">
+        <div class="site-info-title" id="siteInfoTitle">Site Info</div>
+        <button class="site-info-close" onclick="closeSiteInfo()">✕</button>
+      </div>
+      <div class="site-info-body" id="siteInfoBody">
+        <div style="text-align:center;padding:40px 20px;color:#94A3B8;">
+          <div style="font-size:32px;margin-bottom:8px;">📍</div>
+          <div style="font-size:13px;">Click a sector to view details</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Map Toolbar (Search + Chips) ═══ -->
+    <div class="map-toolbar">
+      <div class="map-search-box" id="mapSearchBox">
+        <i data-lucide="search"></i>
+        <input type="text" id="mapSearchInput" 
+               placeholder="Search cell, site or PCI"
+               onkeypress="if(event.key==='Enter') mapSearchFly()">
+        <button onclick="mapSearchFly()">Search</button>
+      </div>
+      <div class="quick-chips">
+        <button class="chip active" data-filter="all" onclick="applyQuickChip('all')">All</button>
+        <button class="chip" data-filter="gsm" onclick="applyQuickChip('gsm')">2G</button>
+        <button class="chip" data-filter="threeg" onclick="applyQuickChip('threeg')">3G</button>
+        <button class="chip" data-filter="lte" onclick="applyQuickChip('lte')">4G</button>
+        <button class="chip" data-filter="b900" onclick="applyQuickChip('b900')">900 MHz</button>
+        <button class="chip" data-filter="b1800" onclick="applyQuickChip('b1800')">1800 MHz</button>
+        <button class="chip" data-filter="b2100" onclick="applyQuickChip('b2100')">2100 MHz</button>
+      </div>
+    </div>
+
+    <!-- ═══ Map Controls (Right) ═══ -->
+    <div class="map-controls">
+      <div class="basemap-switcher">
+        <button class="basemap-btn active" data-basemap="street">Street</button>
+        <button class="basemap-btn" data-basemap="satellite">Satellite</button>
+        <button class="basemap-btn" data-basemap="terrain">Terrain</button>
+      </div>
+      <div class="ctl-group">
+        <button class="ctl" onclick="toggleGotoCoords()" title="Go to coordinates">
+          <i data-lucide="crosshair"></i>
+        </button>
+        <button class="ctl" onclick="toggleBookmarksPanel()" title="Bookmarks">
+          <i data-lucide="bookmark"></i>
+        </button>
+        <button class="ctl" onclick="takeMapScreenshot()" title="Screenshot">
+          <i data-lucide="camera"></i>
+        </button>
+        <button class="ctl" onclick="resetMapView()" title="Reset map view">
+          <i data-lucide="rotate-ccw"></i>
+        </button>
+      </div>
+
+      <div class="goto-panel" id="gotoPanel">
+        <input type="text" id="gotoLat" placeholder="Latitude" value="33.3">
+        <input type="text" id="gotoLon" placeholder="Longitude" value="44.4">
+        <button onclick="gotoCoordinates()">Go</button>
+      </div>
+
+      <div class="bookmarks-panel" id="bookmarksPanel"></div>
+    </div>
+
+    <!-- ═══ Mini Stats ═══ -->
+    <div class="map-mini-stats" id="miniStats">
+      <span>Visible: <b>0</b></span>
+      <span>Sites: <b>0</b></span>
+    </div>
+
+    <!-- ═══ Split Close Button ═══ -->
+    <button class="split-close" onclick="closeSplit()">
+      <i data-lucide="x"></i> Close map
+    </button>
+
+    <!-- ═══ Tool Legend (Interactive) ═══ -->
+    <div class="tool-legend" id="toolLegend">
+      <div class="tool-legend-head">
+        <span id="toolLegendIcon">🎯</span>
+        <span id="toolLegendTitle">Legend</span>
+        <button class="close-btn" onclick="ToolLegend.hide()" title="Hide">✕</button>
+      </div>
+      <div id="toolLegendItems"></div>
+      <div class="tool-legend-actions">
+        <button onclick="ToolLegend.toggleAll(true)">All</button>
+        <button onclick="ToolLegend.toggleAll(false)">None</button>
+        <button onclick="ToolLegend.invert()">Invert</button>
+      </div>
+    </div>
+
+    <!-- ═══ Loading Overlay ═══ -->
+    <div class="loading-overlay" id="loadingOverlay" style="display:none;">
+      <div class="spinner"></div>
+      <div class="text">Loading cells from Supabase...</div>
+      <div style="font-size:11px;color:#94A3B8;margin-top:4px;" id="loadingSubtext">Initializing...</div>
+      <div style="width:240px;height:4px;background:#E9EEF6;border-radius:4px;margin-top:8px;overflow:hidden;">
+        <div id="loadingProgressBar" 
+             style="width:0%;height:100%;background:linear-gradient(90deg,#124191,#00A1E0);transition:width .3s;">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
