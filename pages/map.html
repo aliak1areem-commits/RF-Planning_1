@@ -244,4 +244,19 @@
     </div>
 
   </div>
+     <!-- ═══ Auto-fix panels ═══ -->
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    // أخفِ الـ panels
+    ['gotoPanel', 'bookmarksPanel'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('show');
+        el.style.display = 'none';
+      }
+    });
+  }, 500);
+});
+</script>
 </section>
