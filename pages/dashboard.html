@@ -1,0 +1,108 @@
+<!-- ═══════════════════════════════════════════════════════
+     PAGE: DASHBOARD
+     ═══════════════════════════════════════════════════════ -->
+<section class="page" id="page-dashboard">
+  <div style="padding:24px;overflow-y:auto;flex:1;">
+
+    <!-- ═══ Header ═══ -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <h3 style="font-size:22px;color:#0C1B3D;margin:0 0 4px;">Network Dashboard</h3>
+        <p style="color:#5A6B87;font-size:13px;margin:0;" id="dashSubtitle">Real-time network overview</p>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" onclick="dashRefreshAll()">Refresh</button>
+        <button class="btn btn-ghost" onclick="dashExport()">Export Report</button>
+      </div>
+    </div>
+
+    <!-- ═══ Filters ═══ -->
+    <div style="background:#fff;border-radius:12px;padding:18px 22px;margin-bottom:20px;border:1px solid #E9EEF6;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;">
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:6px;">
+          Technology
+        </label>
+        <select id="dashFilterTech" class="filter-search" onchange="renderDashboard()">
+          <option value="all">All Technologies</option>
+          <option value="GSM">GSM (2G)</option>
+          <option value="3G">UMTS (3G)</option>
+          <option value="LTE">LTE (4G)</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:6px;">
+          Band
+        </label>
+        <select id="dashFilterBand" class="filter-search" onchange="renderDashboard()">
+          <option value="all">All Bands</option>
+          <option value="900">900 MHz</option>
+          <option value="1800">1800 MHz</option>
+          <option value="2100">2100 MHz</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block;font-size:11.5px;font-weight:700;color:#5A6B87;text-transform:uppercase;margin-bottom:6px;">
+          Region
+        </label>
+        <select id="dashFilterRegion" class="filter-search" onchange="renderDashboard()">
+          <option value="all">All Regions</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button class="btn btn-ghost" style="width:100%;justify-content:center;" 
+                onclick="resetDashboardFilters()">Reset</button>
+      </div>
+    </div>
+
+    <!-- ═══ Main KPI Row ═══ -->
+    <div id="dashMainKPI" 
+         style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px;">
+    </div>
+
+    <!-- ═══ Technology Breakdown ═══ -->
+    <div id="dashTechBreakdown" 
+         style="background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid #E9EEF6;">
+    </div>
+
+    <!-- ═══ Conflict Summary ═══ -->
+    <div id="dashConflicts" 
+         style="background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid #E9EEF6;">
+    </div>
+
+    <!-- ═══ Neighbors Summary ═══ -->
+    <div id="dashNeighbors" 
+         style="background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid #E9EEF6;">
+    </div>
+
+    <!-- ═══ Data Quality ═══ -->
+    <div id="dashDataQuality" 
+         style="background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;border:1px solid #E9EEF6;">
+    </div>
+
+    <!-- ═══ Charts Grid ═══ -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px;margin-bottom:20px;">
+      <div class="dash-card">
+        <h4>Technology Distribution</h4>
+        <div class="dash-chart-container"><canvas id="chartTech"></canvas></div>
+      </div>
+      <div class="dash-card">
+        <h4>Cells by Region</h4>
+        <div class="dash-chart-container"><canvas id="chartRegion"></canvas></div>
+      </div>
+      <div class="dash-card">
+        <h4>Top 10 Sites</h4>
+        <div class="dash-chart-container"><canvas id="chartSites"></canvas></div>
+      </div>
+      <div class="dash-card">
+        <h4>Cells by Sector</h4>
+        <div class="dash-chart-container"><canvas id="chartSector"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ═══ Smart Insights ═══ -->
+    <div id="dashInsights" 
+         style="background:#fff;border-radius:12px;padding:20px 24px;border:1px solid #E9EEF6;border-left:4px solid #F2A900;">
+    </div>
+
+  </div>
+</section>
