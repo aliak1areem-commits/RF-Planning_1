@@ -7,16 +7,21 @@
 <meta name="theme-color" content="#0B1730">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23124191'/%3E%3Cpath d='M9 22V10h7a4 4 0 010 8h-7m7 0l5 4' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 
-<!-- ═══ Demo Guard (يجب أن يكون أول شي) ═══ -->
+<!-- ═══════════════════════════════════════════════════════
+     🛡️ Demo Guard (يجب أن يكون أول شي)
+     ═══════════════════════════════════════════════════════ -->
 <script src="./js/core/demo-guard.js"></script>
 
-<!-- ═══ External Libraries ═══ -->
+<!-- ═══════════════════════════════════════════════════════
+     📚 External Libraries
+     ═══════════════════════════════════════════════════════ -->
 <script src="https://unpkg.com/lucide@0.400.0/dist/umd/lucide.min.js"></script>
 <script>
   if (!window.lucide) {
     document.write('<script src="https://cdn.jsdelivr.net/npm/lucide@0.400.0/dist/umd/lucide.min.js"><\/script>');
   }
 </script>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
@@ -28,7 +33,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
-<!-- ═══ CSS Modules ═══ -->
+<!-- ═══════════════════════════════════════════════════════
+     🎨 CSS Modules
+     ═══════════════════════════════════════════════════════ -->
 <link rel="stylesheet" href="./css/main.css">
 <link rel="stylesheet" href="./css/layout.css">
 <link rel="stylesheet" href="./css/components.css">
@@ -40,39 +47,62 @@
 </head>
 
 <body>
-<!-- ═══════════════════════════════════════════
-     MAIN APP
-     ═══════════════════════════════════════════ -->
+
+<!-- ═══════════════════════════════════════════════════════
+     MAIN APP (Sidebar + Topbar + page-mount)
+     ═══════════════════════════════════════════════════════ -->
 <div class="app">
 
-  <!-- ═══ SIDEBAR ═══ -->
+  <!-- ═══════════════════════════════════════════
+       SIDEBAR
+       ═══════════════════════════════════════════ -->
   <aside class="sidebar">
     <div class="sb-brand">
       <div class="sb-logo"><i data-lucide="radio-tower"></i></div>
-      <div class="sb-brand-text"><b>RF Planning</b><span>Network optimization</span></div>
+      <div class="sb-brand-text">
+        <b>RF Planning</b>
+        <span>Network optimization</span>
+      </div>
     </div>
 
     <nav class="sb-nav">
       <div class="sb-section">Workspace</div>
-      <button class="nav-item active" data-page="map"><i data-lucide="map"></i><span>Map</span></button>
-      <button class="nav-item" data-page="dashboard"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></button>
-      <button class="nav-item" data-page="cells"><i data-lucide="table-2"></i><span>Cells</span><span class="badge" id="navCellsCount">0</span></button>
+      <button class="nav-item active" data-page="map">
+        <i data-lucide="map"></i><span>Map</span>
+      </button>
+      <button class="nav-item" data-page="dashboard">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-page="cells">
+        <i data-lucide="table-2"></i><span>Cells</span>
+        <span class="badge" id="navCellsCount">0</span>
+      </button>
 
       <div class="sb-section">Data</div>
-      <button class="nav-item" data-page="projects"><i data-lucide="folder"></i><span>Projects</span></button>
-      <button class="nav-item" data-page="import"><i data-lucide="upload"></i><span>Import</span></button>
+      <button class="nav-item" data-page="projects">
+        <i data-lucide="folder"></i><span>Projects</span>
+      </button>
+      <button class="nav-item" data-page="import">
+        <i data-lucide="upload"></i><span>Import</span>
+      </button>
 
       <div class="sb-section">Optimization</div>
-      <button class="nav-item" data-page="tools"><i data-lucide="wrench"></i><span>Tools</span></button>
+      <button class="nav-item" data-page="tools">
+        <i data-lucide="wrench"></i><span>Tools</span>
+      </button>
     </nav>
 
     <div class="sb-footer">
       <span class="sb-ver">v3.0</span>
-      <button onclick="toggleNav()" title="Collapse menu"><i data-lucide="chevrons-left"></i></button>
+      <button onclick="toggleNav()" title="Collapse menu">
+        <i data-lucide="chevrons-left"></i>
+      </button>
     </div>
   </aside>
 
-  <!-- ═══ MAIN ═══ -->
+  <!-- ═══════════════════════════════════════════
+       MAIN
+       ═══════════════════════════════════════════ -->
   <main class="main">
 
     <!-- ═══ TOPBAR ═══ -->
@@ -84,8 +114,12 @@
       </div>
 
       <div class="topbar-actions">
-        <button class="icon-btn" onclick="loadCells(false)" title="Refresh data"><i data-lucide="refresh-cw"></i></button>
-        <button class="icon-btn" id="toggleSidebarBtn" onclick="toggleMapSidebar()" title="Toggle filters panel"><i data-lucide="panel-left"></i></button>
+        <button class="icon-btn" onclick="loadCells(false)" title="Refresh data">
+          <i data-lucide="refresh-cw"></i>
+        </button>
+        <button class="icon-btn" id="toggleSidebarBtn" onclick="toggleMapSidebar()" title="Toggle filters panel">
+          <i data-lucide="panel-left"></i>
+        </button>
 
         <div class="user-menu">
           <button class="user-chip" onclick="toggleUserMenu(event)">
@@ -94,35 +128,55 @@
             <i data-lucide="chevron-down"></i>
           </button>
           <div class="menu" id="userMenu" onclick="event.stopPropagation()">
-            <button id="darkModeBtn" onclick="toggleDarkMode()"><i data-lucide="moon"></i><span>Dark mode</span></button>
+            <button id="darkModeBtn" onclick="toggleDarkMode()">
+              <i data-lucide="moon"></i><span>Dark mode</span>
+            </button>
             <hr>
-            <button class="danger-item" onclick="doLogout()"><i data-lucide="log-out"></i><span>Sign out</span></button>
+            <button class="danger-item" onclick="doLogout()">
+              <i data-lucide="log-out"></i><span>Sign out</span>
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ PAGES — سنبنيها تدريجياً ═══ -->
+    <!-- ═══════════════════════════════════════════════════════
+         📄 PAGES MOUNT — يُملأ تلقائياً بواسطة pages-loader.js
+         ═══════════════════════════════════════════════════════ -->
     <div id="page-mount"></div>
 
   </main>
 </div>
 
-<!-- ═══ Login Screen ═══ -->
+<!-- ═══════════════════════════════════════════════════════
+     LOGIN SCREEN
+     ═══════════════════════════════════════════════════════ -->
 <div id="loginScreen" class="login">
   <div class="login-card">
     <div class="login-brand">
       <div class="sb-logo"><i data-lucide="radio-tower"></i></div>
-      <div><h1>RF Planning Platform</h1><p>Sign in to continue</p></div>
+      <div>
+        <h1>RF Planning Platform</h1>
+        <p>Sign in to continue</p>
+      </div>
     </div>
+
     <form id="loginForm">
       <label for="loginUsername">Username</label>
-      <input type="text" id="loginUsername" placeholder="your.username" autocomplete="username">
+      <input type="text" id="loginUsername" 
+             placeholder="your.username" 
+             autocomplete="username">
+
       <label for="loginPassword">Password</label>
-      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+      <input type="password" id="loginPassword" 
+             placeholder="••••••••" 
+             autocomplete="current-password">
+
       <div id="loginError" class="login-error" style="display:none"></div>
+
       <button type="submit" id="loginBtn" class="btn btn-primary">Sign in</button>
     </form>
+
     <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);text-align:center;">
       <button type="button" id="tryDemoBtn" onclick="startDemoMode()" class="btn-demo">
         <span>👤</span>
@@ -135,22 +189,27 @@
   </div>
 </div>
 
-<!-- ═══ Global Containers ═══ -->
+<!-- ═══════════════════════════════════════════════════════
+     GLOBAL CONTAINERS
+     ═══════════════════════════════════════════════════════ -->
 <div class="toast" id="toast"></div>
 <div id="modalMount"></div>
-<div id="pageMount"></div>
 
-<!-- ═══════════════════════════════════════════
-     JAVASCRIPT MODULES
-     ═══════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════
+     🚀 JAVASCRIPT MODULES
+     الترتيب مهم جداً — لا تغيّره
+     ═══════════════════════════════════════════════════════ -->
 
-<!-- ═══ Core ═══ -->
+<!-- ═══ 1. Pages Loader (يجب أن يكون أول شي) ═══ -->
+<script src="./js/core/pages-loader.js"></script>
+
+<!-- ═══ 2. Core ═══ -->
 <script src="./js/core/config.js"></script>
 <script src="./js/core/utils.js"></script>
 <script src="./js/core/cache.js"></script>
 <script src="./js/core/router.js"></script>
 
-<!-- ═══ UI ═══ -->
+<!-- ═══ 3. UI ═══ -->
 <script src="./js/ui/legend.js"></script>
 <script src="./js/ui/sidebar-accordion.js"></script>
 <script src="./js/ui/tools-hub.js"></script>
@@ -158,24 +217,24 @@
 <script src="./js/ui/user-menu.js"></script>
 <script src="./js/ui/emoji-stripper.js"></script>
 
-<!-- ═══ i18n ═══ -->
+<!-- ═══ 4. i18n ═══ -->
 <script src="./js/i18n/translations.js"></script>
 <script src="./js/i18n/language.js"></script>
 
-<!-- ═══ Auth ═══ -->
+<!-- ═══ 5. Auth ═══ -->
 <script src="./js/auth/permissions.js"></script>
 <script src="./js/auth/login.js"></script>
 <script src="./js/auth/users-manager.js"></script>
 <script src="./js/auth/demo-mode.js"></script>
 
-<!-- ═══ Data ═══ -->
+<!-- ═══ 6. Data ═══ -->
 <script src="./js/data/cells-loader.js"></script>
 <script src="./js/data/projects.js"></script>
 <script src="./js/data/import.js"></script>
 <script src="./js/data/cells-page.js"></script>
 <script src="./js/data/dashboard.js"></script>
 
-<!-- ═══ Map ═══ -->
+<!-- ═══ 7. Map ═══ -->
 <script src="./js/map/map-init.js"></script>
 <script src="./js/map/map-render.js"></script>
 <script src="./js/map/map-filters.js"></script>
@@ -186,7 +245,7 @@
 <script src="./js/map/map-comments.js"></script>
 <script src="./js/map/map-neighbor-lines.js"></script>
 
-<!-- ═══ Tools ═══ -->
+<!-- ═══ 8. Tools ═══ -->
 <script src="./js/tools/pci-checker.js"></script>
 <script src="./js/tools/gsm-planner.js"></script>
 <script src="./js/tools/psc-checker.js"></script>
@@ -202,27 +261,35 @@
 <script src="./js/tools/unit-converter.js"></script>
 <script src="./js/tools/kml-export.js"></script>
 
-<!-- ═══ Main Entry ═══ -->
+<!-- ═══ 9. Main Entry (يجب أن يكون الأخير) ═══ -->
 <script src="./js/app.js"></script>
 
-<!-- ═══ Service Worker ═══ -->
+<!-- ═══════════════════════════════════════════════════════
+     SERVICE WORKER
+     ═══════════════════════════════════════════════════════ -->
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').then(reg => {
     console.log('✅ SW registered');
+
     reg.addEventListener('updatefound', () => {
       const newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          console.log('🔄 New version available — updating...');
           newWorker.postMessage('SKIP_WAITING');
           setTimeout(() => window.location.reload(), 500);
         }
       });
     });
   }).catch(err => console.log('❌ SW failed:', err));
+
   let refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshing) { refreshing = true; window.location.reload(); }
+    if (!refreshing) {
+      refreshing = true;
+      window.location.reload();
+    }
   });
 }
 </script>
